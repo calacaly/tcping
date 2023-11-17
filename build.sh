@@ -2,7 +2,7 @@
 
 NAME=tcping
 BUILDDIR=build
-VERSIO=dev
+VERSION=v0.1
 
 ARCHS="amd64 386 arm arm64"
 OSS="darwin linux windows"
@@ -46,7 +46,7 @@ function go_build_release() {
     export CGO_ENABLED=0
     export GOOS=${OS}
     export GOARCH=${ARCH}
-    go build -o ${BUILDDIR}/${NAME}_v${VERSION}_${OS}_${ARCH}${ext}
+    go build -o ${BUILDDIR}/${NAME}_${VERSION}_${OS}_${ARCH}${ext}
 }
 
 function main() {
