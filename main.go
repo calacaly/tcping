@@ -17,7 +17,7 @@ import (
 
 var (
 	showVersion bool
-	version     string
+	version     string = "v0.1"
 	gitCommit   string
 	counter     int
 	timeout     string
