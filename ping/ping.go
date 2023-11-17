@@ -221,7 +221,8 @@ Ping statistics %s
 	%d successful, %d failed.
 Approximate trip times:
 	MinDuration = %s, MaxDuration = %s, AvgDuration = %s 
-	%s`
+	%s
+`
 
 	_, _ = fmt.Fprintf(p.out, tpl, p.url.String(), p.total, p.total-p.failedTotal, p.failedTotal, p.minDuration, p.maxDuration, p.totalDuration/time.Duration(p.total),p.jitter)
 }
