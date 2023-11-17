@@ -1,43 +1,14 @@
-NAME=tcping
-BASE_BUILDDIR=build
-BUILDNAME=$(GOOS)-$(GOARCH)$(GOARM)
-BUILDDIR=$(BASE_BUILDDIR)/$(BUILDNAME)
-VERSION?=dev
-
-ifeq ($(GOOS),windows)
-  ext=.exe
-  archiveCmd=zip -9 -r $(NAME)-$(BUILDNAME)-$(VERSION).zip $(BUILDNAME)
-else
-  ext=
-  archiveCmd=tar czpvf $(NAME)-$(BUILDNAME)-$(VERSION).tar.gz $(BUILDNAME)
-endif
-
 .PHONY: default
 default: build
 
 build: clean
-	go build
+	@bash build.sh build
 
-release: check-env-release
-	mkdir -p $(BUILDDIR)
-	cp LICENSE $(BUILDDIR)/
-	cp README.md $(BUILDDIR)/
-	CGO_ENABLED=0 GOOS=$(GOOS) GOARCH=$(GOARCH) go build . -ldflags "-s -w -X main.Version=$(VERSION)" -o $(BUILDDIR)/$(NAME)$(ext)
-	cd $(BASE_BUILDDIR) ; $(archiveCmd)
+release: clean
+	@bash build.sh release
 
 test:
-	go test -race -v -bench=. ./...
+	@bash build.sh test
 
 clean:
-	go clean
-	rm -rf $(BASE_BUILDDIR)
-
-check-env-release:
-	@ if [ "$(GOOS)" = "" ]; then \
-		echo "Environment variable GOOS not set"; \
-		exit 1; \
-	fi
-	@ if [ "$(GOARCH)" = "" ]; then \
-		echo "Environment variable GOOS not set"; \
-		exit 1; \
-	fi
+	@bash build.sh clean
