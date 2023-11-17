@@ -5,7 +5,7 @@ import (
 	"context"
 	"crypto/tls"
 	"fmt"
-	"github.com/cloverstd/tcping/ping"
+	"github.com/calacaly/tcping/ping"
 	"net"
 	"net/http/httptrace"
 	"time"

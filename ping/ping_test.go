@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	tcping "github.com/cloverstd/tcping/ping"
+	tcping "github.com/calacaly/tcping/ping"
 	"net/url"
 	"testing"
 	"time"
@@ -27,7 +27,7 @@ func TestPinger(t *testing.T) {
 	var buf bytes.Buffer
 	pinger := tcping.NewPinger(&buf, u, PingHandler(func(ctx context.Context) *tcping.Stats {
 		return &tcping.Stats{
-			Address:     "127.0.0.1:443",
+			Address:     "39.156.66.10:443",
 			Connected:   true,
 			Duration:    time.Second,
 			DNSDuration: time.Millisecond * 8,

@@ -10,7 +10,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/cloverstd/tcping/ping"
+	"github.com/calacaly/tcping/ping"
 )
 
 var _ ping.Ping = (*Ping)(nil)

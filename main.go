@@ -3,9 +3,9 @@ package main
 import (
 	"context"
 	"fmt"
-	"github.com/cloverstd/tcping/ping"
-	"github.com/cloverstd/tcping/ping/http"
-	"github.com/cloverstd/tcping/ping/tcp"
+	"github.com/calacaly/tcping/ping"
+	"github.com/calacaly/tcping/ping/http"
+	"github.com/calacaly/tcping/ping/tcp"
 	"github.com/spf13/cobra"
 	"net"
 	"net/url"

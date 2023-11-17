@@ -19,6 +19,20 @@ import (
 
 var pinger = map[Protocol]Factory{}
 
+
+type Jitter struct {
+	lastDuration time.Duration
+	count int
+	MaxJitter time.Duration
+	MinJitter time.Duration
+	totalJitter time.Duration
+}
+
+func (jt Jitter) String() string {
+	return fmt.Sprintf("MinJitter = %s, MaxJitter = %s, AvgJitter = %s",jt.MinJitter,jt.MaxJitter,jt.totalJitter / time.Duration(jt.count))
+}
+
+
 type Factory func(url *url.URL, op *Option) (Ping, error)
 
 func Register(protocol Protocol, factory Factory) {
@@ -149,6 +163,7 @@ type Pinger struct {
 	minDuration   time.Duration
 	maxDuration   time.Duration
 	totalDuration time.Duration
+	jitter Jitter
 	total         int
 	failedTotal   int
 }
@@ -205,9 +220,10 @@ Ping statistics %s
 	%d probes sent.
 	%d successful, %d failed.
 Approximate trip times:
-	Minimum = %s, Maximum = %s, Average = %s`
+	MinRTT = %s, MaxRTT = %s, AvgRTT = %s 
+	%s`
 
-	_, _ = fmt.Fprintf(p.out, tpl, p.url.String(), p.total, p.total-p.failedTotal, p.failedTotal, p.minDuration, p.maxDuration, p.totalDuration/time.Duration(p.total))
+	_, _ = fmt.Fprintf(p.out, tpl, p.url.String(), p.total, p.total-p.failedTotal, p.failedTotal, p.minDuration, p.maxDuration, p.totalDuration/time.Duration(p.total),p.jitter)
 }
 
 func (p *Pinger) formatError(err error) string {
@@ -243,6 +259,17 @@ func (p *Pinger) logStats(stats *Stats) {
 		p.maxDuration = stats.Duration
 	}
 	p.totalDuration += stats.Duration
+
+	// set frist jitter
+	if p.jitter.lastDuration == 0 && stats.Error == nil {
+		p.jitter.lastDuration = stats.Duration
+		p.jitter.totalJitter = 0
+		p.jitter.MaxJitter = 0
+		p.jitter.MinJitter = 0
+		p.jitter.count = 1
+	}
+	
+
 	if stats.Error != nil {
 		p.failedTotal++
 		if errors.Is(stats.Error, context.Canceled) {
@@ -251,6 +278,8 @@ func (p *Pinger) logStats(stats *Stats) {
 		}
 	}
 	status := "Failed"
+
+	// if connected
 	if stats.Connected {
 		status = "connected"
 	}
@@ -258,8 +287,27 @@ func (p *Pinger) logStats(stats *Stats) {
 	if stats.Error != nil {
 		_, _ = fmt.Fprintf(p.out, "Ping %s(%s) %s(%s) - time=%s dns=%s", p.url.String(), stats.Address, status, p.formatError(stats.Error), stats.Duration, stats.DNSDuration)
 	} else {
-		_, _ = fmt.Fprintf(p.out, "Ping %s(%s) %s - time=%s dns=%s", p.url.String(), stats.Address, status, stats.Duration, stats.DNSDuration)
+		_, _ = fmt.Fprintf(p.out, "Ping %s(%s) %s - time=%s dns=%s jitter=%s", p.url.String(), stats.Address, status, stats.Duration, stats.DNSDuration, (stats.Duration-p.jitter.lastDuration).Abs())
 	}
+
+	//logstats end and set jitter
+	if stats.Error == nil {
+		
+		j := (stats.Duration-p.jitter.lastDuration).Abs()
+		p.jitter.totalJitter += j
+
+		if p.jitter.MaxJitter < j {
+			p.jitter.MaxJitter = j
+		}
+
+		if p.jitter.MinJitter > j || p.jitter.MinJitter == 0 {
+			p.jitter.MinJitter = j
+		}
+		p.jitter.count++
+		p.jitter.lastDuration = stats.Duration
+	}
+
+
 	if len(stats.Meta) > 0 {
 		_, _ = fmt.Fprintf(p.out, " %s", stats.FormatMeta())
 	}
@@ -267,6 +315,8 @@ func (p *Pinger) logStats(stats *Stats) {
 	if stats.Extra != nil {
 		_, _ = fmt.Fprintf(p.out, " %s\n", strings.TrimSpace(stats.Extra.String()))
 	}
+
+
 }
 
 // Result ...
@@ -294,6 +344,7 @@ func (result Result) Failed() int {
 }
 
 func (result Result) String() string {
+
 	const resultTpl = `
 Ping statistics {{.Target}}
 	{{.Counter}} probes sent.

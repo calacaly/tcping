@@ -15,14 +15,14 @@ endif
 .PHONY: default
 default: build
 
-build: clean test
-	go build -mod=vendor
+build: clean
+	go build
 
 release: check-env-release
 	mkdir -p $(BUILDDIR)
 	cp LICENSE $(BUILDDIR)/
 	cp README.md $(BUILDDIR)/
-	CGO_ENABLED=0 GOOS=$(GOOS) GOARCH=$(GOARCH) go build -mod=vendor -ldflags "-s -w -X main.Version=$(VERSION)" -o $(BUILDDIR)/$(NAME)$(ext)
+	CGO_ENABLED=0 GOOS=$(GOOS) GOARCH=$(GOARCH) go build . -ldflags "-s -w -X main.Version=$(VERSION)" -o $(BUILDDIR)/$(NAME)$(ext)
 	cd $(BASE_BUILDDIR) ; $(archiveCmd)
 
 test:

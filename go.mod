@@ -1,17 +1,16 @@
-module github.com/cloverstd/tcping
+module github.com/calacaly/tcping
 
-go 1.18
+go 1.21
 
 require (
-	github.com/smartystreets/goconvey v1.7.2
-	github.com/spf13/cobra v1.3.0
-	golang.org/x/net v0.0.0-20220114011407-0dd24b26b47d
+	github.com/smartystreets/goconvey v1.8.1
+	github.com/spf13/cobra v1.8.0
 )
 
 require (
-	github.com/gopherjs/gopherjs v0.0.0-20181017120253-0766667cb4d1 // indirect
-	github.com/inconshreveable/mousetrap v1.0.0 // indirect
+	github.com/gopherjs/gopherjs v1.17.2 // indirect
+	github.com/inconshreveable/mousetrap v1.1.0 // indirect
 	github.com/jtolds/gls v4.20.0+incompatible // indirect
-	github.com/smartystreets/assertions v1.2.0 // indirect
+	github.com/smarty/assertions v1.15.0 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
 )

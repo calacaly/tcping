@@ -2,8 +2,8 @@ package http_test
 
 import (
 	"context"
-	tcping "github.com/cloverstd/tcping/ping"
-	"github.com/cloverstd/tcping/ping/http"
+	tcping "github.com/calacaly/tcping/ping"
+	"github.com/calacaly/tcping/ping/http"
 	"testing"
 )
 
